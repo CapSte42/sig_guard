@@ -1,11 +1,18 @@
-#include <execinfo.h>
-#include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   sigsegv_guard.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: smontuor <smontuor@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/05/27 22:29:21 by smontuor          #+#    #+#             */
+/*   Updated: 2024/05/27 22:29:22 by smontuor         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void	print_stack_trace()
+#include "sigsegv_guard.h"
+
+static void	print_stack_trace()
 {
 	void *buffer[100];
 	int nptrs = backtrace(buffer, 100);
@@ -42,7 +49,7 @@ void	print_stack_trace()
 	free(strings);
 }
 
-void	sigsegv_handler(int sig)
+static void	sigsegv_handler(int sig)
 {
 	printf("Caught signal %d (%s)\n", sig, strsignal(sig));
 	print_stack_trace();

@@ -1,4 +1,4 @@
-# sigsegv_guard
+# sig_guard
 
 **Automatic Stack Trace and Debugging for Segmentation Faults (and other signal) in C Programs**
 

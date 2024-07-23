@@ -6,7 +6,7 @@
 /*   By: smontuor <smontuor@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 22:29:21 by smontuor          #+#    #+#             */
-/*   Updated: 2024/07/23 13:53:40 by smontuor         ###   ########.fr       */
+/*   Updated: 2024/07/23 14:20:19 by smontuor         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,7 @@ static void	print_stack_trace()
 	}
 
 	printf("Stack trace:\n");
-	/*print in reverse*/
-	for (int i = nptrs - 1; i >= 2; i--) // last 2 frames are sigsegv_handler and print_stack_trace
+	for (int i = nptrs - 1; i > 1; i--) // last 2 frames are sigsegv_handler and print_stack_trace
 	{
 		char command[256];
 		FILE *fp;
@@ -42,7 +41,7 @@ static void	print_stack_trace()
 		char result[256];
 		while (fgets(result, sizeof(result), fp) != NULL)
 		{
-			if (strstr(result, "??") == NULL && strstr(result, "sigsegv_guard") == NULL)
+			if (strstr(result, "??") == NULL && strstr(result, "sig_guard") == NULL)
 				printf("%s", result);
 		}
 		pclose(fp);
@@ -60,6 +59,7 @@ static void	sigsegv_handler(int sig)
 void sig_guard(char *exec_name)
 {
 	struct sigaction sa;
+
 	g_executable_name = exec_name;
 	sa.sa_handler = sigsegv_handler;
 	sigemptyset(&sa.sa_mask);

@@ -63,6 +63,8 @@ This can helps in debugging by showing you the exact location in your code where
 The sigsegv_guard library sets up a signal handler for SIGSEGV that captures the current stack trace using the backtrace and backtrace_symbols functions.
 It then uses the addr2line utility to translate the addresses into readable file names and line numbers, which are printed to the standard output.
 
+## Sometimes it can be inaccurate, indicating the line after the function that is called within which the SIGSEGV occurs. I don't know why.
+
 # Contributions
 Contributions are welcome! Please open an issue or submit a pull request if you have any improvements or bug fixes.
 

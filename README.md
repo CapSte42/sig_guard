@@ -2,6 +2,9 @@
 
 **Automatic Stack Trace and Debugging for Segmentation Faults (and other signal) in C Programs**
 
+![sigsegv](https://github.com/user-attachments/assets/8e1a39c1-7a14-4b68-a255-ea8162a01813)
+
+
 ## Overview
 
 The `sig_guard` library provides a simple way to automatically capture and print stack traces when a error signal (e.g. `SIGSEGV`) occurs in your C programs.

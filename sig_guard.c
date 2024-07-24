@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   sig_guard.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: smontuor <smontuor@student.42.fr>          +#+  +:+       +#+        */
+/*   By: smontuor42 <smontuor42@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/27 22:29:21 by smontuor          #+#    #+#             */
-/*   Updated: 2024/07/23 14:20:19 by smontuor         ###   ########.fr       */
+/*   Updated: 2024/07/24 04:01:30 by smontuor42       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,44 @@
 
 char	*g_executable_name;
 
+void print_last_called_line(char *str)
+{
+	char	*filename = strtok(str, ":");
+	char	*line_number_str = strtok(NULL, ":");
+	int		line_number = atoi(line_number_str);
+	FILE	*file = fopen(filename, "r");
+	char	line[MAX_LINE_LENGTH];
+	int		current_line = 0;
+
+	if (file == NULL)
+	{
+		perror("Error opening the file");
+		return ;
+	}
+	while (fgets(line, sizeof(line), file))
+	{
+		current_line++;
+		if (current_line == line_number)
+		{
+			printf(ANSI_COLOR_RED ANSI_BOLD_ON "\n---> %s" ANSI_BOLD_OFF ANSI_COLOR_RESET "\n", line);
+		}
+		else if (current_line > line_number - CONTEXT_LINES && current_line < line_number + CONTEXT_LINES)
+			printf("%s", line);
+	}
+	if (current_line < line_number)
+		printf("Something happened here: the file %s has less then %d row.\n", filename, line_number);
+	fclose(file);
+}
+
 static void	print_stack_trace()
 {
 	void *buffer[100];	// change this value if you need more or less stack frames
 	int nptrs = backtrace(buffer, 100);
 	char **strings = backtrace_symbols(buffer, nptrs);
+	char *destination = NULL;
+	char command[256];
+	FILE *fp;
+	char result[256];
 
 	if (strings == NULL)
 	{
@@ -29,8 +62,6 @@ static void	print_stack_trace()
 	printf("Stack trace:\n");
 	for (int i = nptrs - 1; i > 1; i--) // last 2 frames are sigsegv_handler and print_stack_trace
 	{
-		char command[256];
-		FILE *fp;
 		snprintf(command, sizeof(command), "addr2line -e %s %p", g_executable_name, buffer[i]);
 		fp = popen(command, "r");
 		if (fp == NULL)
@@ -38,14 +69,20 @@ static void	print_stack_trace()
 			perror("popen");
 			exit(EXIT_FAILURE);
 		}
-		char result[256];
 		while (fgets(result, sizeof(result), fp) != NULL)
 		{
 			if (strstr(result, "??") == NULL && strstr(result, "sig_guard") == NULL)
+			{
+				free(destination);
 				printf("%s", result);
+				destination = (char *)malloc(strlen(result) + 1);
+				strcpy(destination, result);
+			}
 		}
 		pclose(fp);
 	}
+	print_last_called_line(destination);
+	free(destination);
 	free(strings);
 }
 

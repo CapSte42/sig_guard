@@ -2,8 +2,7 @@
 
 **Automatic Stack Trace and Debugging for Segmentation Faults (and other signal) in C Programs**
 
-![sigsegv](https://github.com/user-attachments/assets/8e1a39c1-7a14-4b68-a255-ea8162a01813)
-
+![fdfseg1](https://github.com/user-attachments/assets/dfcf3c5a-7fe1-4977-baf5-1e9d4e3bfc11)
 
 ## Overview
 

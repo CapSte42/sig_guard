@@ -66,33 +66,51 @@ This can helps in debugging by showing you the exact location in your code where
 The sigsegv_guard library sets up a signal handler for SIGSEGV that captures the current stack trace using the backtrace and backtrace_symbols functions.
 It then uses the addr2line utility to translate the addresses into readable file names and line numbers, which are printed to the standard output.
 
-## Using -no-pie and -rdynamic Flags in Compilation
+## Using -no-pie, -rdynamic, and -O0 Flags in Compilation
 
-### -no-pie Flag Why Use It:
+### -no-pie Flag
 
-### Debugging:
-Disables Address Space Layout Randomization (ASLR), ensuring memory addresses remain consistent across runs.
-This simplifies debugging and stack trace analysis.
-Compatibility: Required on some legacy systems that do not support Position Independent Executable (PIE) binaries.
+#### Why Use It:
 
-### Functionality:
-The -no-pie flag instructs the compiler not to generate a PIE executable.
-This ensures the executable is loaded at a fixed memory address each time it is run, making memory addresses predictable during debugging.
+##### Debugging:
+- Disables Address Space Layout Randomization (ASLR), ensuring memory addresses remain consistent across runs.
+- This simplifies debugging and stack trace analysis.
 
-### -rdynamic Flag Why Use It:
+##### Compatibility:
+- Required on some legacy systems that do not support Position Independent Executable (PIE) binaries.
 
-### Detailed Stack Traces:
-Makes program symbols available to the dynamic linker and debugger, enabling more informative stack traces with function names and line numbers.
+#### Functionality:
+- The `-no-pie` flag instructs the compiler not to generate a PIE executable.
+- This ensures the executable is loaded at a fixed memory address each time it is run, making memory addresses predictable during debugging.
 
-### Functionality:
-The -rdynamic flag ensures that the symbol table of the executable is included in the binary.
-This allows functions like backtrace_symbols() to retrieve human-readable function names instead of just memory addresses in stack traces.
+### -rdynamic Flag
+
+#### Why Use It:
+
+##### Detailed Stack Traces:
+- Makes program symbols available to the dynamic linker and debugger, enabling more informative stack traces with function names and line numbers.
+
+#### Functionality:
+- The `-rdynamic` flag ensures that the symbol table of the executable is included in the binary.
+- This allows functions like `backtrace_symbols()` to retrieve human-readable function names instead of just memory addresses in stack traces.
+
+### -O0 Flag
+
+#### Why Use It:
+
+##### Debugging:
+- Disables all optimizations, ensuring the code is as close to the source code as possible.
+- This makes debugging easier and stack traces more accurate.
+
+#### Functionality:
+- The `-O0` flag tells the compiler to not optimize the code.
+- This ensures that the code remains straightforward and predictable, which is beneficial during debugging.
 
 ### Example Usage
 To compile with these flags, use the following command:
 
 ```sh
-gcc -g -no-pie -rdynamic main.c sig_guard.c -o a.out
+gcc -g -O0 -no-pie -rdynamic main.c sig_guard.c -o a.out
 ```
 
 ## Sometimes it can be inaccurate, indicating the line after the function that is called within which the SIGSEGV occurs. I don't know why.
